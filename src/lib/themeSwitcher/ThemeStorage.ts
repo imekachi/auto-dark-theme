@@ -1,5 +1,3 @@
-import type { ThemeName } from '@/lib/themeSwitcher/theme'
-
 export type ThemeStorageOptions = {
   /**
    * A storage key for the theme
@@ -15,11 +13,11 @@ export class ThemeStorage {
     this.key = options.key ?? 'theme'
   }
 
-  get(): ThemeName | undefined {
-    return (localStorage.getItem(this.key) as ThemeName | null) ?? undefined
+  get(): string | undefined {
+    return localStorage.getItem(this.key) ?? undefined
   }
 
-  set(themeName: ThemeName) {
+  set(themeName: string) {
     localStorage.setItem(this.key, themeName)
   }
 }

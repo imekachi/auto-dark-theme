@@ -21,7 +21,7 @@ export class ThemeManager {
     this.defaultTheme = options.defaultTheme ?? THEME_NAMES[0]
   }
 
-  getCurrentTheme() {
+  getCurrentTheme(): ThemeName {
     const rawTheme = this.themeStorage.get() ?? this.defaultTheme
     // If the theme data is invalid, return the default theme
     return isValidThemeName(rawTheme) ? rawTheme : this.defaultTheme
