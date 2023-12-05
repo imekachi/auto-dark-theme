@@ -5,13 +5,9 @@ import {
   isSystemTheme,
   ThemeManager,
 } from '@/lib/themeSwitcher/ThemeManager'
-import { ThemeStorage } from '@/lib/themeSwitcher/ThemeStorage'
 import { updateDomTheme } from '@/lib/themeSwitcher/updateDomTheme'
 
-const themeManager = new ThemeManager({
-  themeStorage: new ThemeStorage(),
-  defaultTheme: 'system',
-})
+const themeManager = new ThemeManager()
 
 function App() {
   const [selectedTheme, setSelectedTheme] = useState(() => {
@@ -28,7 +24,6 @@ function App() {
   }, [])
 
   const handleThemeSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    console.log('Selected theme: ', event.target.value)
     const newTheme = event.target.value as ThemeName
     setSelectedTheme(newTheme)
     themeManager.setCurrentTheme(newTheme)
@@ -39,15 +34,6 @@ function App() {
     updateDomTheme({ themeManager })
     setSelectedTheme(themeManager.getCurrentTheme())
   }, [])
-
-  // Handle changes to the theme storage
-  useLayoutEffect(() => {
-    window.addEventListener('storage', syncDomThemeWithReactState)
-
-    return () => {
-      window.removeEventListener('storage', syncDomThemeWithReactState)
-    }
-  }, [syncDomThemeWithReactState])
 
   // handle changes to the system theme
   useLayoutEffect(() => {
@@ -61,6 +47,17 @@ function App() {
       mediaQuery.removeEventListener('change', syncDomThemeWithReactState)
     }
   }, [selectedTheme, syncDomThemeWithReactState])
+
+  // Handle changes to the theme storage.
+  // The use case is when the user opens multiple tabs and changes the theme in one of them.
+  // Note: The tab that creates the change event won't get notified, only other tabs will.
+  useLayoutEffect(() => {
+    window.addEventListener('storage', syncDomThemeWithReactState)
+
+    return () => {
+      window.removeEventListener('storage', syncDomThemeWithReactState)
+    }
+  }, [syncDomThemeWithReactState])
 
   return (
     <div className="grid min-h-[100dvh] place-items-center">
