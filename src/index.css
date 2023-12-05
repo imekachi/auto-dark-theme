@@ -1,3 +1,19 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --color-background-primary: 0 0% 96.1%;
+    --color-foreground-primary: 0 0% 7%;
+    --color-background-input-primary: 0 0% 100%;
+    --color-foreground-input-primary: var(--color-foreground-primary);
+  }
+
+  .dark {
+    --color-background-primary: 0 0% 7%;
+    --color-foreground-primary: 0 0% 96.1%;
+    --color-background-input-primary: 0 0% 13.3%;
+    --color-foreground-input-primary: var(--color-foreground-primary);
+  }
+}
