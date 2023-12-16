@@ -7,6 +7,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "build-gh": "tsc && vite build --base=/auto-dark-theme/",
+    "deploy-gh": "pnpm build-gh && gh-pages -d dist",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -31,6 +33,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "eslint-plugin-unused-imports": "^3.0.0",
+    "gh-pages": "^6.1.0",
     "postcss": "^8.4.32",
     "prettier": "^3.1.0",
     "prettier-plugin-tailwindcss": "^0.5.7",
