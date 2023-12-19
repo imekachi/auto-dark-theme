@@ -6,15 +6,14 @@ import {
   useMemo,
   useRef,
 } from 'react'
-import { useCurrentTheme } from '@/lib/themeSwitcher/react/useCurrentTheme'
 import {
+  DEFAULT_THEME_MANAGER,
   getSystemDarkThemeMediaQuery,
   isSystemTheme,
   ThemeManager,
-} from '@/lib/themeSwitcher/ThemeManager'
-import { updateDomTheme } from '@/lib/themeSwitcher/updateDomTheme'
-
-const DEFAULT_THEME_MANAGER = new ThemeManager()
+} from '../ThemeManager'
+import { updateDomTheme } from '../updateDomTheme'
+import { useCurrentTheme } from './useCurrentTheme'
 
 export type UseThemeSwitcherOptions = {
   themeManager?: ThemeManager
@@ -30,7 +29,7 @@ export function useThemeSwitcher(options: UseThemeSwitcherOptions = {}) {
     shouldSyncDomThemeOnMount = true,
   } = options
 
-  const theme = useCurrentTheme()
+  const theme = useCurrentTheme({ themeManager })
 
   const setTheme: Dispatch<SetStateAction<typeof theme>> = useCallback(
     (newTheme) => {
