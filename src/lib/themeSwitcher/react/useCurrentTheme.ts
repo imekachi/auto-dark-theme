@@ -11,5 +11,8 @@ export type UseCurrentThemeOptions = {
 export function useCurrentTheme(options: UseCurrentThemeOptions = {}) {
   const { themeManager = DEFAULT_THEME_MANAGER } = options
 
-  return useSyncExternalStore(themeManager.subscribe, themeManager.getCurrentTheme)
+  return useSyncExternalStore(
+    themeManager.subscribe,
+    themeManager.getCurrentTheme,
+  )
 }
