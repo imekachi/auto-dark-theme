@@ -1,5 +1,12 @@
-import { useCallback, useLayoutEffect, useMemo, useRef, useState } from 'react'
-import { ThemeName } from '@/lib/themeSwitcher/theme'
+import {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+} from 'react'
+import { useCurrentTheme } from '@/lib/themeSwitcher/react/useCurrentTheme'
 import {
   getSystemDarkThemeMediaQuery,
   isSystemTheme,
@@ -11,27 +18,31 @@ const DEFAULT_THEME_MANAGER = new ThemeManager()
 
 export type UseThemeSwitcherOptions = {
   themeManager?: ThemeManager
+  /**
+   * @default true
+   */
+  shouldSyncDomThemeOnMount?: boolean
 }
 
 export function useThemeSwitcher(options: UseThemeSwitcherOptions = {}) {
-  const { themeManager = DEFAULT_THEME_MANAGER } = options
+  const {
+    themeManager = DEFAULT_THEME_MANAGER,
+    shouldSyncDomThemeOnMount = true,
+  } = options
 
-  // React state for the selected theme
-  const [theme, _setTheme] = useState<ThemeName>(() => {
-    return themeManager.getCurrentTheme()
-  })
+  const theme = useCurrentTheme()
 
-  const setTheme: typeof _setTheme = useCallback(
+  const setTheme: Dispatch<SetStateAction<typeof theme>> = useCallback(
     (newTheme) => {
-      _setTheme((prevTheme) => {
-        const nextTheme =
-          typeof newTheme === 'function' ? newTheme(prevTheme) : newTheme
+      const nextTheme =
+        typeof newTheme === 'function'
+          ? newTheme(themeManager.getCurrentTheme())
+          : newTheme
 
-        themeManager.setCurrentTheme(nextTheme)
-        updateDomTheme({ themeManager, currentTheme: nextTheme })
+      themeManager.setCurrentTheme(nextTheme)
+      updateDomTheme({ themeManager, currentTheme: nextTheme })
 
-        return nextTheme
-      })
+      return nextTheme
     },
     [themeManager],
   )
@@ -39,17 +50,19 @@ export function useThemeSwitcher(options: UseThemeSwitcherOptions = {}) {
   // Sync the selected theme with DOM for the first render
   const isReactStateAndDomThemeInSyncRef = useRef(false)
   useLayoutEffect(() => {
-    if (!isReactStateAndDomThemeInSyncRef.current) {
+    if (
+      shouldSyncDomThemeOnMount &&
+      !isReactStateAndDomThemeInSyncRef.current
+    ) {
       updateDomTheme({ themeManager })
       isReactStateAndDomThemeInSyncRef.current = true
       return
     }
-  }, [themeManager])
+  }, [shouldSyncDomThemeOnMount, themeManager])
 
   // Sync React state and DOM theme with external changes
   const syncDomThemeWithReactState = useCallback(() => {
     updateDomTheme({ themeManager })
-    _setTheme(themeManager.getCurrentTheme())
   }, [themeManager])
 
   // Handle changes from the system theme
