@@ -12,7 +12,7 @@ function App() {
       <select
         value={theme}
         onChange={(event) => setTheme(event.target.value as ThemeName)}
-        className="bg-background-input-primary text-foreground-input-primary rounded-lg p-4 font-semibold capitalize shadow"
+        className="rounded-lg bg-background-input-primary p-4 font-semibold capitalize text-foreground-input-primary shadow"
       >
         {THEME_NAMES.map((name) => {
           return (

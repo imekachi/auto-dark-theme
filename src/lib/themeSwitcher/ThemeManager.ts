@@ -1,5 +1,5 @@
-import { THEME_NAMES, ThemeName } from '@/lib/themeSwitcher/theme'
-import { ThemeStorage } from '@/lib/themeSwitcher/ThemeStorage'
+import { THEME_NAMES, ThemeName } from './theme'
+import { ThemeStorage } from './ThemeStorage'
 
 export type ThemeEventListener = (themeName: ThemeName) => void
 export type ThemeEvent = 'change'

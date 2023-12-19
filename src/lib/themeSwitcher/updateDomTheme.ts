@@ -1,10 +1,11 @@
-import { ThemeName } from '@/lib/themeSwitcher/theme'
+import { ThemeClasses, ThemeName } from './theme'
+import { DEFAULT_THEME_CLASSES } from './themeClasses'
 import {
-  isDarkTheme,
+  DEFAULT_THEME_MANAGER,
   isSystemDarkThemePreferred,
   isSystemTheme,
   ThemeManager,
-} from '@/lib/themeSwitcher/ThemeManager'
+} from './ThemeManager'
 
 type UpdateDomThemeOptions = {
   /**
@@ -17,16 +18,7 @@ type UpdateDomThemeOptions = {
    * @default ['changing-theme']
    */
   transitioningClasses?: string[]
-  /**
-   * Classes to add to the target element when the theme is dark
-   * @default ['dark']
-   */
-  darkClasses?: string[]
-  /**
-   * Classes to add to the target element when the theme is light
-   * @default ['light']
-   */
-  lightClasses?: string[]
+  themeClasses?: ThemeClasses
   /**
    * A theme manager.
    * You can choose a different storage key by creating a new instance of the theme storage and theme manager.
@@ -48,26 +40,30 @@ type UpdateDomThemeOptions = {
 export function updateDomTheme(options: UpdateDomThemeOptions = {}) {
   const {
     targetElement = document.documentElement,
-    transitioningClasses = ['changing-theme'],
-    darkClasses = ['dark'],
-    lightClasses = ['light'],
-    themeManager = new ThemeManager(),
+    transitioningClasses = ['transition-colors'],
+    themeManager = DEFAULT_THEME_MANAGER,
     currentTheme = themeManager.getCurrentTheme(),
   } = options
   // Add the transitioning class to the target element
   addClassList(targetElement, transitioningClasses)
 
-  // Should add dark theme classes?
-  if (
-    isDarkTheme(currentTheme) ||
-    (isSystemTheme(currentTheme) && isSystemDarkThemePreferred())
-  ) {
-    removeClassList(targetElement, lightClasses)
-    addClassList(targetElement, darkClasses)
-  } else {
-    removeClassList(targetElement, darkClasses)
-    addClassList(targetElement, lightClasses)
-  }
+  const themeClasses = { ...DEFAULT_THEME_CLASSES, ...options.themeClasses }
+  const themeClassesEntries = Object.entries(themeClasses) as [
+    keyof typeof themeClasses,
+    string[],
+  ][]
+  const themeToApply =
+    isSystemTheme(currentTheme) && isSystemDarkThemePreferred()
+      ? 'dark'
+      : currentTheme
+
+  themeClassesEntries.forEach(([themeName, classes]) => {
+    if (themeName === themeToApply) {
+      addClassList(targetElement, classes)
+    } else {
+      removeClassList(targetElement, classes)
+    }
+  })
 
   // Delayed remove transitioning classes
   window.setTimeout(() => {
